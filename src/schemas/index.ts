@@ -20,7 +20,6 @@ export const registerSchema = z.object({
 
 export type SearchFormValues = z.infer<typeof searchSchema>;
 export const searchSchema= z.object({
-  userId: z.string().optional(), // If you want to filter by a specific user's listings
   locationValue: z.string().optional(),
   guestCount: z.coerce.number().int().positive().optional(), // Coerces string to int, ensures positive
   roomCount: z.coerce.number().int().positive().optional(),
@@ -30,30 +29,10 @@ export const searchSchema= z.object({
   endDate: z.coerce.date().optional(),
 });
 
-export type RentFormValues = z.infer<typeof rentSchema>;
-export const rentSchema = z.object({
-  category: z.string().min(1, "Category is required"),
-  location: z.string().min(1, "Location is required"),
-  guestCount: z.number().min(1, "Guest count must be at least 1"),
-  roomCount: z.number().min(1, "Room count must be at least 1"),
-  bathroomCount: z.number().min(1, "Bathroom count must be at least 1"),
-  imgSrc: z.string().url("At least one image is required"),
-  images: z
-  .array(
-    z.object({
-      url: z.string().url("Invalid URL"),
-    })
-  )
-  .optional(),
-  price: z.number().min(1, "Price must be greater than 0"),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-});
-
 export type ListingFormValues = z.infer<typeof ListingSchema>;
 export const ListingSchema = z.object({
   category: z.string().min(1, "Category is required"),
-  location: z.string().min(1, "Location is required"),
+  locationValue: z.string().min(1, "Location is required"),
   guestCount: z.number().min(1, "Guest count must be at least 1"),
   roomCount: z.number().min(1, "Room count must be at least 1"),
   bathroomCount: z.number().min(1, "Bathroom count must be at least 1"),

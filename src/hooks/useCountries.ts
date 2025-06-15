@@ -1,24 +1,9 @@
-import countries from 'world-countries';
-
-const formattedCountries = countries.map((country) => ({
-  value: country.cca2,
-  label: country.name.common,
-  flag: country.flag,
-  latlng: country.latlng,
-  region: country.region,
-}));
+// hooks/useCountries.ts
+import Countries from "@/utils/Countries";
 
 const useCountries = () => {
-  const getAll = () => formattedCountries;
-
-  const getByValue = (value: string) => {
-    return formattedCountries.find((item) => item.value === value);
-  }
-
-  return {
-    getAll,
-    getByValue
-  }
+  // You could add state here if needed
+  return Countries; // Reuses the same utility
 };
 
 export default useCountries;
