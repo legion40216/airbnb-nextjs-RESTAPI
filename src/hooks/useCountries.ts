@@ -1,9 +1,9 @@
 // hooks/useCountries.ts
-import Countries from "@/utils/Countries";
+import countryUtils from "@/utils/countryUtils";
 
 const useCountries = () => {
   // You could add state here if needed
-  return Countries; // Reuses the same utility
+  return countryUtils; // Reuses the same utility
 };
 
 export default useCountries;
