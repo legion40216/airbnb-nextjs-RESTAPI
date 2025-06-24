@@ -1,10 +1,10 @@
 // app/actions/getListings.ts
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prismadb";
-import { SearchFormValues } from "@/schemas";
+import { SearchParamsValues } from "@/schemas";
 
 export default async function getListings(
-  params: Partial<SearchFormValues>
+  params: SearchParamsValues
 ) {
   try {
     const {
@@ -16,7 +16,7 @@ export default async function getListings(
       startDate,
       endDate,
     } = params;
-    
+  
     // 1. Build the Prisma query object with strict typing
     const query: Prisma.ListingWhereInput = {
       ...(category && { category }),

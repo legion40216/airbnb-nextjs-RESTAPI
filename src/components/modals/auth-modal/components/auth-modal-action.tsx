@@ -16,7 +16,7 @@ export default function AuthModalAction({
   handleSubmitForm,
   formType,
 }: AuthModalActionProps) {
-const { setFormType } = useAuthModalStore();
+const { setType : setFormType } = useAuthModalStore();
 
   return (
     <div className="text-center space-y-4">

@@ -7,12 +7,14 @@ import React from 'react';
 export default function RemoveFilterBtn({
   setOpen
 }: {
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
 }) {
   const router = useRouter();
 
   const handleClick = () => {
-    setOpen(false); // Close the modal
+    if (setOpen) {
+      setOpen(false); // Close the modal
+    }
     router.push('/'); // Navigate to home or reset filters
   };
 

@@ -1,19 +1,18 @@
-// lib/store/authModalStore.ts
 import { create } from 'zustand';
-type FormType = 'login' | 'register';
-
-type AuthModalState = {
+interface BaseModalStore<T> {
   isOpen: boolean;
-  formType: FormType;
-  openModal: (formType?: FormType) => void; // Make it optional
+  type: T | null;
+  openModal: (type: T) => void;
   closeModal: () => void;
-  setFormType: (formType: FormType) => void;
-};
+  setType: (type: T) => void; // Optional for stores that need type switching
+}
 
-export const useAuthModalStore = create<AuthModalState>((set) => ({
+type AuthModalType = 'login' | 'register';
+
+export const useAuthModalStore = create<BaseModalStore<AuthModalType>>((set) => ({
   isOpen: false,
-  formType: 'login', // default state
-  openModal: (formType = 'login') => set({ isOpen: true, formType }), // default to 'login' if not provided
+  type: 'login', // Default type
+  openModal: (type = 'login') => set({ isOpen: true, type }), // Optional type with default
   closeModal: () => set({ isOpen: false }),
-  setFormType: (formType) => set({ formType }),
+  setType: (type) => set({ type }), // Additional method for auth-specific needs
 }));

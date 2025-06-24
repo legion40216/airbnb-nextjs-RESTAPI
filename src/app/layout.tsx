@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import AuthModalProvider from "@/components/modals/auth-modal/auth-modal-provider";
-import MultiModalProvider from "@/components/modals/multi-modal/multi-modal-provider";
+
 import { Toaster } from "sonner";
 import { Provider } from "@radix-ui/react-tooltip";
 import Providers from "@/lib/providers";
 
+import AuthModalProvider from "@/components/modals/auth-modal/auth-modal-provider";
+import MultiModalProvider from "@/components/modals/multi-modals/multi-modals/multi-modal-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,17 +1,15 @@
-// useMultiModalStore.ts
+// stores/useMultiModalStore.ts
 import { create } from 'zustand';
-
-// Zustand store for managing multiple modals in a React application
-type ModalType = 'rent' | 'search' | null; // Add other modal types as needed
-
-interface MultiModalStore {
+interface BaseModalStore<T> {
   isOpen: boolean;
-  type: ModalType;
-  openModal: (type: ModalType) => void;
+  type: T | null;
+  openModal: (type: T) => void;
   closeModal: () => void;
 }
 
-export const useMultiModalStore = create<MultiModalStore>((set) => ({
+type ModalType = 'rent' | 'search'; // Add other modal types as needed
+
+export const useMultiModalStore = create<BaseModalStore<ModalType>>((set) => ({
   isOpen: false,
   type: null,
   openModal: (type) => set({ isOpen: true, type }),

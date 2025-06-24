@@ -1,8 +1,10 @@
-import getListings from "@/app/actions/getListings";
-import { currentUser } from "@/hooks/server-auth-utils";
-import prisma from "@/lib/prismadb";
-import { ListingSchema, searchSchema } from "@/schemas";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prismadb";
+import { currentUser } from "@/hooks/server-auth-utils";
+
+import getListings from "@/app/actions/getListings";
+import { getValidatedServerSearchParams } from "@/utils/parseSearchParams";
+import { ListingSchema } from "@/schemas";
 
 export async function POST(request: Request) {
   try {
@@ -80,22 +82,15 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  // Get query params
   const url = new URL(request.url);
   const rawParams = Object.fromEntries(url.searchParams.entries());
 
   // Safe parse
-  const parsed = searchSchema.safeParse(rawParams);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Invalid search parameters", details: parsed.error.flatten() },
-      { status: 400 }
-    );
-  }
-
-  const params = parsed.data;
+  const parsedParams = getValidatedServerSearchParams(rawParams);
 
   try {
-    const listings = await getListings(params);
+    const listings = await getListings(parsedParams);
     return NextResponse.json(listings);
   } catch (error) {
     console.error("[listings_GET]", error);
