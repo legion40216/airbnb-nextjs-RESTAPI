@@ -8,7 +8,7 @@ import { signUp } from "@/lib/auth-client";
 import { RegisterFormValues, registerSchema } from "@/schemas";
 import RegisterForm from "./register-form/registration-form";
 import AuthModal from "./auth-modal";
-import { Form } from "../../ui/form";
+import { Form } from "../../../../../my-app/src/components/ui/form";
 import { useAuthModalStore } from "@/hooks/useAuthModalStore";
 
 type registerProps = {
@@ -16,7 +16,7 @@ type registerProps = {
   description: string;
   isOpen: boolean;
   setOpen: (open: boolean) => void;
-  formType?: "register"
+  formType: "register"
 };
 
 export default function RegisterModalWrapper({
@@ -39,7 +39,7 @@ export default function RegisterModalWrapper({
 
   const { isSubmitting } = form.formState;
   const { handleSubmit } = form;
-  const { setFormType } = useAuthModalStore();
+  const { setType: setFormType } = useAuthModalStore();
 
   
   const handleSubmitForm = async () => {
@@ -85,7 +85,7 @@ export default function RegisterModalWrapper({
           setOpen={setOpen}
           body={currentBody}
           isSubmitting={isSubmitting}
-          handleSubmitForm={handleSubmitForm} // Pass form submission handler
+          handleSubmitForm={handleSubmitForm}
           formType={formType}
        />
       </form>

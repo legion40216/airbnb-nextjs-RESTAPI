@@ -9,7 +9,7 @@ import { LoginFormValues, loginSchema } from '@/schemas';
 import AuthModal from './auth-modal';
 import LoginForm from './login-form/login-form';
 import { useForm } from "react-hook-form";
-import { Form } from '../../ui/form';
+import { Form } from '../../../../../my-app/src/components/ui/form';
 
 type LoginProps = {
   title: string;

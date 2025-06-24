@@ -1,6 +1,38 @@
 //schemas/index.ts
 import * as z from "zod"
 
+//Other schemas
+export type ReservationServerValues = z.infer<typeof reservationServerSchema>;
+export const reservationServerSchema = z.object({
+  startDate: z.coerce.date({
+    required_error: "Start date is required",
+    invalid_type_error: "Invalid start date",
+  }),
+  endDate: z.coerce.date({
+    required_error: "End date is required",
+    invalid_type_error: "Invalid end date",
+  }),
+  totalPrice: z.coerce.number().int().positive("Total price must be a positive number"),
+  listingId: z.string().min(1, "Listing ID is required"),
+}).refine(
+  (data) => data.endDate > data.startDate,
+  {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  }
+);
+export type SearchParamsValues = z.infer<typeof searchParamsSchema>;
+export const searchParamsSchema = z.object({
+  locationValue: z.string().default(""),
+  guestCount: z.coerce.number().int().positive().min(1).default(1),
+  roomCount: z.coerce.number().int().positive().min(1).default(1), 
+  bathroomCount: z.coerce.number().int().positive().min(1).default(1),
+  category: z.string().default(""),
+  startDate: z.coerce.date().optional(),
+  endDate: z.coerce.date().optional(),
+});
+
+//Form schemas
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export const loginSchema = z.object({
     email: z.string().email({
@@ -19,13 +51,13 @@ export const registerSchema = z.object({
 });
 
 export type SearchFormValues = z.infer<typeof searchSchema>;
-export const searchSchema= z.object({
+export const searchSchema = z.object({
   locationValue: z.string().optional(),
-  guestCount: z.coerce.number().int().positive().optional(), // Coerces string to int, ensures positive
-  roomCount: z.coerce.number().int().positive().optional(),
-  bathroomCount: z.coerce.number().int().positive().optional(), // Consistent casing: bathroomCount
+  guestCount: z.coerce.number().int().positive().min(1),
+  roomCount: z.coerce.number().int().positive().min(1), 
+  bathroomCount: z.coerce.number().int().positive().min(1),
   category: z.string().optional(),
-  startDate: z.coerce.date().optional(), // Coerces string (e.g., ISO date string) to Date
+  startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
 });
 
@@ -52,13 +84,31 @@ export const ListingSchema = z.object({
 export type ReservationFormValues = z.infer<typeof reservationSchema>;
 export const reservationSchema = z.object({
   startDate: z.coerce.date({
-    required_error: "Start date is required",
     invalid_type_error: "Invalid start date",
-  }),
+  }).optional(),
   endDate: z.coerce.date({
-    required_error: "End date is required",
     invalid_type_error: "Invalid end date",
-  }),
-  totalPrice: z.coerce.number().int().positive("Total price must be a positive number"),
+  }).optional(),
+  totalPrice: z.coerce.number().int().min(0, "Total price must be non-negative"),
   listingId: z.string().min(1, "Listing ID is required"),
-});
+}).refine(
+  (data) => {
+    // If startDate is provided, endDate must also be provided
+    if (data.startDate && !data.endDate) {
+      return false;
+    }
+    // If endDate is provided, startDate must also be provided
+    if (data.endDate && !data.startDate) {
+      return false;
+    }
+    // If both are provided, endDate must be after startDate
+    if (data.startDate && data.endDate) {
+      return data.endDate > data.startDate;
+    }
+    return true;
+  },
+  {
+    message: "Please select both check-in and check-out dates, with check-out after check-in",
+    path: ["endDate"],
+  }
+);

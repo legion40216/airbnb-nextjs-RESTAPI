@@ -6,7 +6,7 @@ import LoginModalWrapper from './login-modal-wrapper';
 import RegisterModalWrapper from './register-modal-wrapper';
 
 export default function AuthModalProvider() {
-  const { isOpen, formType, closeModal } = useAuthModalStore();
+  const { isOpen, type: formType, closeModal } = useAuthModalStore();
 
   if (!isOpen) {
     return null;
