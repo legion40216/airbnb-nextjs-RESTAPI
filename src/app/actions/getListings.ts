@@ -1,11 +1,12 @@
+
 // app/actions/getListings.ts
-import { Prisma } from "@/generated/prisma";
+import { Prisma, Listing } from "@/generated/prisma";
 import prisma from "@/lib/prismadb";
 import { SearchParamsValues } from "@/schemas";
 
 export default async function getListings(
   params: SearchParamsValues
-) {
+): Promise<{ listings: Listing[] } | { error: string }> {
   try {
     const {
       locationValue,
@@ -51,8 +52,9 @@ export default async function getListings(
       orderBy: { createdAt: "desc" },
     });
 
-    return listings;
+    return { listings };
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Failed to fetch listings");
+    console.error('Error fetching listings:', error);
+    return { error: error instanceof Error ? error.message : "Failed to fetch listings" };
   }
 }
