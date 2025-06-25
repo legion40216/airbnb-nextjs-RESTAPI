@@ -1,6 +1,6 @@
-// app/page.tsx
 import getListings from "@/app/actions/getListings";
 import { getValidatedServerSearchParams } from "@/utils/parseSearchParams";
+import EmptyState from "@/components/global-ui/empty-state";
 
 import Client from "./_modules/components/home/client";
 
@@ -12,10 +12,14 @@ export default async function Page({
   const resolvedParams = await searchParams;
   const parsed = getValidatedServerSearchParams(resolvedParams);
   
-  const listings = await getListings(parsed);
+  const result = await getListings(parsed);
 
-  // simulate loading
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // Handle error case
+  if ('error' in result) {
+    return <EmptyState title="Error loading listings" subtitle={result.error} />
+  }
+
+  const { listings } = result;
 
   return <Client initialData={listings} />;
 }

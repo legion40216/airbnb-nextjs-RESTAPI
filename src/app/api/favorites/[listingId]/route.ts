@@ -4,7 +4,6 @@ import prisma from "@/lib/prismadb";
 import { currentUser } from "@/hooks/server-auth-utils";
 
 import { z } from 'zod';
-
 // Zod schema for UUID validation
 const listingIdSchema = z.string().uuid();
 
@@ -49,6 +48,7 @@ export async function POST(
       },
     });
 
+    // 3. Add or remove favorite
     if (existingFavorite) {
       // Remove favorite
       await prisma.favourite.delete({
@@ -67,12 +67,13 @@ export async function POST(
       });
 
       return NextResponse.json(
-        { success: true, listing, message: "Favourited listing successfully" },
+        { success: true, message: "Favourited listing successfully" },
         { status: 200 }
       );
     }
+
   } catch (error) {
-    console.error("[favorites_PATCH]", error);
+    console.error("[favorites_POST]", error);
     return NextResponse.json(
       { error: "An unexpected error occurred" },
       { status: 500 }
@@ -84,7 +85,6 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ listingId: string }> }
 ): Promise<Response> {
-
   try {
     // 1. Authenticate user
     const user = await currentUser();
