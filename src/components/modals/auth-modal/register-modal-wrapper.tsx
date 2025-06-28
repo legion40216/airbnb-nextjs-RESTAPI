@@ -1,14 +1,14 @@
 // components/auth/RegisterModal.tsx
 "use client";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Form, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { signUp } from "@/lib/auth-client";
 import { RegisterFormValues, registerSchema } from "@/schemas";
 import RegisterForm from "./register-form/registration-form";
 import AuthModal from "./auth-modal";
-import { Form } from "../../../../../my-app/src/components/ui/form";
+
 import { useAuthModalStore } from "@/hooks/useAuthModalStore";
 
 type registerProps = {

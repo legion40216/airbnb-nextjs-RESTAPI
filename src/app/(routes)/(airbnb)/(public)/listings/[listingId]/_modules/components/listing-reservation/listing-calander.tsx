@@ -94,7 +94,6 @@ export default function ListingCalendar({ form, disabledDates }: ListingCalendar
               onSelect={handleDateRangeChange}
               numberOfMonths={1}
               disabled={isDateDisabled}
-              autoFocus
               className="w-full p-0"
               
               classNames={{

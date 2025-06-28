@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 export default function UserMenu() {
   const { openModal } = useAuthModalStore();
   const { user, isPending } = useCurrentUser();
+  const isLoggedIn = !!user; // Check if user is logged in
   const router = useRouter();
 
   const handleLogout = async (e: React.MouseEvent) => {
@@ -32,7 +33,7 @@ export default function UserMenu() {
   };
 
   const handleLogin = () => {
-    openModal();
+    openModal("login");
   };
 
   return (
@@ -46,7 +47,7 @@ export default function UserMenu() {
         >
           <Avatar>
             <AvatarImage
-              src={user?.image || (user ? "https://github.com/shadcn.png" : undefined)}
+              src={user?.image || (isLoggedIn ? "https://github.com/shadcn.png" : undefined)}
               alt={user?.name || "User"}
             />
             <AvatarFallback>
@@ -62,10 +63,10 @@ export default function UserMenu() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="z-[9999]" align="end">
-        <DropdownMenuLabel>{user ? "My Account" : "Welcome"}</DropdownMenuLabel>
+        <DropdownMenuLabel>{isLoggedIn ? "My Account" : "Welcome"}</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {user ? (
+        {isLoggedIn ? (
           <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
             <LogOut className="h-4 w-4 mr-2" />
             Logout

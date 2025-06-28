@@ -19,8 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
-
 type LocationInputProps = {
   form: UseFormReturn<ListingFormValues>;
 };
