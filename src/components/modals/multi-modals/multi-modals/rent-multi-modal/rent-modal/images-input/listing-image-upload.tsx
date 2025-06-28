@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { cn } from "@/lib/utils";
 import { ImagePlus, Trash, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 

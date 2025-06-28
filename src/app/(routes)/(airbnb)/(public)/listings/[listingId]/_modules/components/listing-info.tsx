@@ -4,21 +4,22 @@ import { Separator } from '@/components/ui/separator';
 import { Category } from '@/constants/categoryIcons';
 
 interface ListingInfoProps {
-  formattedListing: {
-    title: string;
-    description: string;
-    category: string;
-    roomCount: number;
-    bathroomCount: number;
-    guestCount: number;
-    userName: string;
-    userImg: string | null;
-  };
+  description: string;
+  roomCount: number;
+  bathroomCount: number;
+  guestCount: number;
+  userName: string;
+  userImg: string | null;
   category?: Category;
 }
 
 export default function ListingInfo({
-  formattedListing,
+  description,
+  roomCount,
+  bathroomCount,
+  guestCount,
+  userName,
+  userImg,
   category,
 }: ListingInfoProps) {
   return (
@@ -26,27 +27,23 @@ export default function ListingInfo({
       {/* Title */}
       <div>
         {/* Name and Image  */}
-        <div className="flex gap-2 items-center text-xl 
-        font-semibold"
-        >
-          <p>Hosted by {formattedListing.userName}</p>
+        <div className="flex gap-2 items-center text-xl font-semibold">
+          <p>Hosted by {userName}</p>
           <Avatar>
-            {formattedListing.userImg ? (
-              <AvatarImage src={formattedListing.userImg} />
+            {userImg ? (
+              <AvatarImage src={userImg} />
             ) : null}
             <AvatarFallback>
-              {formattedListing.userName
-                ? formattedListing.userName.charAt(0)
-                : "?"}
+              {userName ? userName.charAt(0) : "?"}
             </AvatarFallback>
           </Avatar>
         </div>
 
-        { /* Details */}
+        {/* Details */}
         <div className="flex gap-2 font-light text-neutral-500">
-          <p>{formattedListing.guestCount} guests</p>
-          <p>{formattedListing.roomCount} rooms</p>
-          <p>{formattedListing.bathroomCount} bathrooms</p>
+          <p>{guestCount} guests</p>
+          <p>{roomCount} rooms</p>
+          <p>{bathroomCount} bathrooms</p>
         </div>
       </div>
 
@@ -54,20 +51,20 @@ export default function ListingInfo({
 
       {/* Icon */}          
       {category && (
-      <div className="flex items-center gap-2">
-        <category.icon size={40} className=" text-neutral-600" />
-        <div>
-          <p className="text-lg font-semibold">{category.label}</p>
-          <p className=" text-neutral-500 font-light">{category.description}</p>
+        <div className="flex items-center gap-2">
+          <category.icon size={40} className="text-neutral-600" />
+          <div>
+            <p className="text-lg font-semibold">{category.label}</p>
+            <p className="text-neutral-500 font-light">{category.description}</p>
+          </div>
         </div>
-      </div>
       )}
 
       <Separator />
 
       {/* Description */}
       <div className="font-light text-neutral-500">
-        {formattedListing.description}
+        {description}
       </div>
     </div>
   )

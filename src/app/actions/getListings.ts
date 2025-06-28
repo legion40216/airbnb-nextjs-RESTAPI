@@ -1,12 +1,16 @@
-
 // app/actions/getListings.ts
 import { Prisma, Listing } from "@/generated/prisma";
 import prisma from "@/lib/prismadb";
 import { SearchParamsValues } from "@/schemas";
 
+// This type is used to handle different error scenarios when fetching a listing by ID
+export type ListingsError =
+  | { type: "DATABASE_ERROR"; message: string }
+  | { type: "UNKNOWN_ERROR"; message: string };
+
 export default async function getListings(
   params: SearchParamsValues
-): Promise<{ listings: Listing[] } | { error: string }> {
+): Promise<{ listings: Listing[] } | { error: ListingsError }> {
   try {
     const {
       locationValue,
@@ -17,7 +21,7 @@ export default async function getListings(
       startDate,
       endDate,
     } = params;
-  
+
     // 1. Build the Prisma query object with strict typing
     const query: Prisma.ListingWhereInput = {
       ...(category && { category }),
@@ -45,7 +49,7 @@ export default async function getListings(
           },
         }),
     };
-
+    
     // 2. Fetch listings
     const listings = await prisma.listing.findMany({
       where: query,
@@ -54,7 +58,13 @@ export default async function getListings(
 
     return { listings };
   } catch (error) {
-    console.error('Error fetching listings:', error);
-    return { error: error instanceof Error ? error.message : "Failed to fetch listings" };
+    console.error("Error fetching listings:", error); // Log the actual error for debugging
+
+    return {
+      error: {
+        type: "DATABASE_ERROR",
+        message: "Unable to fetch listings at this time",
+      },
+    };
   }
 }

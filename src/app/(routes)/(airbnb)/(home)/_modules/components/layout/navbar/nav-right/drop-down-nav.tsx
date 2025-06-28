@@ -18,6 +18,7 @@ import { useCurrentUser } from "@/hooks/client-auth-utils";
 
 export default function DropDownNav() {
   const { user, isPending } = useCurrentUser();
+  const isLoggedIn = !!user; // Convert user to boolean
   const pathname = usePathname();
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +40,7 @@ export default function DropDownNav() {
 
   // Show the button if we're still loading OR if user is logged in
   // Only hide it when we're done loading AND there's no user
-  if (!isPending && !user) {
+  if (!isPending && !isLoggedIn) {
     return null;
   }
 

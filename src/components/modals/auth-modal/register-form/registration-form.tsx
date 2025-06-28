@@ -1,13 +1,10 @@
 // components/auth/RegisterForm.tsx
 'use client';
-
 import React from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterFormValues, registerSchema } from '@/schemas';
+import { UseFormReturn } from 'react-hook-form';
+
+import { RegisterFormValues} from '@/schemas';
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,

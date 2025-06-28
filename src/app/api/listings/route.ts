@@ -89,9 +89,20 @@ export async function GET(request: Request) {
   // Safe parse
   const parsedParams = getValidatedServerSearchParams(rawParams);
 
-  try {
-    const listings = await getListings(parsedParams);
-    return NextResponse.json(listings);
+try {
+    const result = await getListings(parsedParams);
+    
+    // Handle the union type properly
+    if ('error' in result) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 400 }
+      );
+    }
+    
+    // Return just the listings array, not the wrapper object
+    return NextResponse.json(result.listings);
+    
   } catch (error) {
     console.error("[listings_GET]", error);
     return NextResponse.json(
@@ -100,3 +111,5 @@ export async function GET(request: Request) {
     );
   }
 }
+
+

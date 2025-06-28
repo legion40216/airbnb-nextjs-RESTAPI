@@ -10,6 +10,8 @@ import { differenceInDays, eachDayOfInterval } from "date-fns";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
+import { useAuthModalStore } from '@/hooks/useAuthModalStore';
+import { useCurrentUser } from '@/hooks/client-auth-utils';
 
 import {
     Card,
@@ -24,6 +26,7 @@ import { Form } from "@/components/ui/form";
 import { ActionBtn } from "@/components/global-ui/airbnb-buttons/action-btn";
 import { Separator } from '@/components/ui/separator';
 import ListingCalendar from './listing-reservation/listing-calander';
+
 
 interface ListingReservationProps {
   listingId: string;
@@ -52,6 +55,10 @@ export default function ListingReservation({
   const startDate = watch("startDate");
   const endDate = watch("endDate");
   const router = useRouter();
+  const {user} = useCurrentUser()
+  const isLoggedIn = !!user; // Check if user is logged in
+  const { openModal: openAuthModal } = useAuthModalStore();
+
 
   // Memoizing disabled dates to avoid unnecessary recalculations
   const disabledDates = useMemo(() => {
@@ -80,17 +87,33 @@ export default function ListingReservation({
     }
   }, [startDate, endDate, price, setValue]);
 
+  // Authentication handler
+  const handleAuthRequired = () => {
+    if (!isLoggedIn) {
+      openAuthModal("login");
+      return;
+    }
+  };
+
   // Form submit logic
   const toastLoading = "Creating your reservation... Please wait.";
   const toastMessage = "Your reservation has been created successfully!";
-
+  
   // Utility to transform form data into server data
   const safelyToServerReservationData = (
     formData: ReservationFormValues
   ): z.SafeParseReturnType<ReservationFormValues, ReservationServerValues> => {
     return reservationServerSchema.safeParse(formData);
   };
-  const onSubmit = async (values: ReservationFormValues) => {    
+  
+  // Function to handle form submission
+  const onSubmit = async (values: ReservationFormValues) => {
+    // Check authentication before proceeding
+    if (!isLoggedIn) {
+      handleAuthRequired();
+      return;
+    }
+    
     const toastId = toast.loading(toastLoading);
 
     //parses values to reservationservervalues 
@@ -105,16 +128,39 @@ export default function ListingReservation({
       await axios.post(`/api/reservations`, values);
       toast.success(toastMessage);
       router.refresh();
+      form.reset();
     } catch (error) {
       console.log(error)
-      toast.error((error as any).response?.data?.error || "Something went wrong!");
-    }  finally {
+      // Handle specific authentication errors from server
+      if ((error as any).response?.status === 401) {
+        toast.error("Please log in to make a reservation");
+        handleAuthRequired();
+      } else {
+        toast.error((error as any).response?.data?.error || "Something went wrong!");
+      }
+    } finally {
       toast.dismiss(toastId);
     }
   };
 
+  // Handle reservation button click
+  const handleReserveClick = () => {
+    if (!isLoggedIn) {
+      handleAuthRequired();
+      return;
+    }
+    handleSubmit(onSubmit)();
+  };
+
   // Check if reservation can be made
   const canReserve = startDate && endDate && !isSubmitting;
+  
+  // Determine button text and behavior
+  const getButtonText = () => {
+    if (!isLoggedIn) return 'Log in to reserve';
+    if (!startDate || !endDate) return 'Select dates';
+    return 'Reserve';
+  };
 
   return (
     <Card className='gap-0 space-y-4'>
@@ -128,7 +174,10 @@ export default function ListingReservation({
           </p>
         </CardTitle>
         <CardDescription>
-          Select your dates to see the total price
+          {isLoggedIn 
+            ? "Select your dates to see the total price"
+            : "Log in to make a reservation"
+          }
         </CardDescription>
       </CardHeader>
 
@@ -137,7 +186,10 @@ export default function ListingReservation({
       <CardContent>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-            <ListingCalendar form={form} disabledDates={disabledDates} />
+            <ListingCalendar 
+              form={form} 
+              disabledDates={disabledDates}
+            />
           </form>
         </Form>
       </CardContent>
@@ -147,11 +199,11 @@ export default function ListingReservation({
       {/* Reserve button - Submit button */}
       <div className='px-4'>
         <ActionBtn 
-          onClick={handleSubmit(onSubmit)} 
-          disabled={!canReserve}
+          onClick={handleReserveClick}
+          disabled={!isLoggedIn ? false : !canReserve} // Allow clicking when not logged in to trigger auth
           type="button"
         >
-          {!startDate || !endDate ? 'Select dates' : 'Reserve'}
+          {getButtonText()}
         </ActionBtn>
       </div>
 

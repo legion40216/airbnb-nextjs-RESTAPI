@@ -1,30 +1,49 @@
 // app/[listingId]/page.tsx
-import React from 'react'
+import React from "react";
 
-import getListingById from '@/app/actions/getListingById';
-import EmptyState from '@/components/global-ui/empty-state'
-import useCountries from '@/hooks/useCountries';
-import { categories } from '@/constants/categoryIcons';
+import getListingById from "@/app/actions/getListingById";
+import EmptyState from "@/components/global-ui/empty-state";
+import useCountries from "@/hooks/useCountries";
 
-import Headings from '@/components/global-ui/headings';
-import ListingBanner from './_modules/components/listing-banner';
-import ListingInfo from './_modules/components/listing-info';
-import ListingReservation from './_modules/components/listing-reservation';
+import SectionReservationInfo from "./_modules/sections/section-reservation-info";
+import SectionBannerHeading from "./_modules/sections/section-banner-heading";
 
-export default async function Page({params}: {params: Promise<{listingId: string}>}) {
+export const dynamic = 'force-dynamic';
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ listingId: string }>;
+}) {
   // Await params before using its properties
   const resolvedParams = await params;
   const result = await getListingById(resolvedParams);
 
   // Handle error case
-  if ('error' in result) {
-    return <EmptyState title="Error loading listings" subtitle={result.error} />
+ if ("error" in result) {
+    const { error } = result;
+    switch (error.type) {
+      case 'DATABASE_ERROR':
+      case 'UNKNOWN_ERROR':
+      default:
+        return (
+          <EmptyState 
+            title="Unable to fetch listing" 
+            subtitle="We're experiencing technical difficulties. Please try again later."
+          />
+        );
+    }
   }
 
   const { listing } = result;
-  
+
   if (!listing) {
-    return <EmptyState title="Listing not found" subtitle="We couldn't find the listing you're looking for." />
+    return (
+      <EmptyState
+        title="Listing not found"
+        subtitle="We couldn't find the listing you're looking for."
+      />
+    );
   }
 
   const { getByValue } = useCountries();
@@ -41,45 +60,39 @@ export default async function Page({params}: {params: Promise<{listingId: string
     bathroomCount: listing.bathroomCount,
     guestCount: listing.guestCount,
     userName: listing.user.name,
-    userImg: listing.user.image || null,
+    userImg: listing.user.image || "",
     locationRegion: country?.region,
     locationLabel: country?.label,
     price: listing.price || 0,
     imgSrc: listing.imgSrc,
   };
 
-  const subtitle = `${formattedListing.locationRegion}, ${formattedListing.locationLabel}`;
-
-  const category = categories.find((item) => {
-    return item.label === formattedListing.category;
-  });
-
-  const formattedReservations = listing.reservations.map((item) => ({
-    startDate: new Date(item?.startDate),
-    endDate: new Date(item?.endDate),
-  }));
+  // Ensure all necessary fields are present
+  const bannerData = {
+    title: formattedListing.title,
+    locationRegion: formattedListing.locationRegion ?? "",
+    locationLabel: formattedListing.locationLabel ?? "",
+    listingId: formattedListing.listingId,
+    imgSrc: formattedListing.imgSrc,
+  };
+  const reservationData = {
+    listingId: formattedListing.listingId,
+    category: formattedListing.category,
+    price: formattedListing.price,
+    description: formattedListing.description,
+    roomCount: formattedListing.roomCount,
+    bathroomCount: formattedListing.bathroomCount,
+    guestCount: formattedListing.guestCount,
+    userName: formattedListing.userName,
+    userImg: formattedListing.userImg,
+    reservations: listing.reservations, // Keep original reservations for date formatting
+  };
 
   return (
     <div className="space-y-4">
-      <Headings 
-      title={formattedListing.title} 
-      subtitle={subtitle} 
-      />
-
-      <ListingBanner
-        listingId={formattedListing.listingId}
-        imgSrc={formattedListing.imgSrc}
-      />
+      <SectionBannerHeading bannerData={bannerData} />
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-10">
-        <ListingInfo 
-        category={category} 
-        formattedListing={formattedListing} />
-
-        <ListingReservation
-          listingId={formattedListing.listingId}
-          price={formattedListing.price}
-          reservations={formattedReservations}
-        />
+        <SectionReservationInfo reservationData={reservationData} />
       </div>
     </div>
   );

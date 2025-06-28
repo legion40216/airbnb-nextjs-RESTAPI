@@ -6,7 +6,7 @@ export const useListings = (
   params: SearchParamsValues,
   initialData?: Listing[]
 ) => {
-  return useQuery({
+  return useQuery<Listing[], Error>({
     queryKey: ["listings", params],
     queryFn: () => fetchListings(params),
     initialData,
@@ -15,17 +15,22 @@ export const useListings = (
   });
 };
 
-const fetchListings = async (params: SearchParamsValues) => {
-  // Build the query string for the API
-  // params currently is in the form of object we need to make it a query string
+const fetchListings = async (params: SearchParamsValues): Promise<Listing[]> => {
   const query = new URLSearchParams();
-  // Filter out undefined values
+  
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined) 
-    query.set(key, String(value));
+    if (value !== undefined) {
+      query.set(key, String(value));
+    }
   });
 
   const res = await fetch(`/api/listings?${query.toString()}`);
-  if (!res.ok) throw new Error('Failed to fetch');
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || 'Failed to fetch listings');
+  }
+  
+  // This will now be properly typed as ListingWithFavorites[]
   return res.json();
 };

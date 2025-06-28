@@ -19,8 +19,10 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Await params and validate listingId with Zod
+    // 2. Await params
     const { listingId: rawListingId } = await params;
+
+    // 3. Validate listingId with Zod
     const validation = listingIdSchema.safeParse(rawListingId);
     if (!validation.success) {
       return NextResponse.json(
@@ -30,7 +32,7 @@ export async function POST(
     }
     const listingId = validation.data;
 
-    // check if listingId exists
+    // 4. Check if listingId exists
     const listing = await prisma.listing.findUnique({
       where: {
         id: listingId,
@@ -40,7 +42,7 @@ export async function POST(
       return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }
 
-    // Check if favorite already exists
+    // 5. Check if favorite already exists
     const existingFavorite = await prisma.favourite.findFirst({
       where: {
         userId,
@@ -48,7 +50,7 @@ export async function POST(
       },
     });
 
-    // 3. Add or remove favorite
+    // 6. Add or remove favorite
     if (existingFavorite) {
       // Remove favorite
       await prisma.favourite.delete({
@@ -59,17 +61,14 @@ export async function POST(
       return NextResponse.json({ isFavorited: false });
     } else {
       // Add favorite
-      const listing = await prisma.favourite.create({
+      await prisma.favourite.create({
         data: {
           userId,
           listingId,
         },
       });
 
-      return NextResponse.json(
-        { success: true, message: "Favourited listing successfully" },
-        { status: 200 }
-      );
+      return NextResponse.json({ isFavorited: true });
     }
 
   } catch (error) {
@@ -104,6 +103,7 @@ export async function GET(
     }
     const listingId = validation.data;
 
+    // 3. Check if favorite exists
     const favorite = await prisma.favourite.findFirst({
       where: {
         userId,
@@ -111,6 +111,7 @@ export async function GET(
       },
     });
 
+    // If favorite exists, return true, otherwise false
     return NextResponse.json({ isFavorited: !!favorite });
   } catch (error) {
     console.error("[favorites_GET]", error);
