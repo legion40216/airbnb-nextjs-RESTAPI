@@ -7,7 +7,7 @@ import { formatter } from '@/utils/formatters';
 import { format } from 'date-fns';
 
 import EmptyState from '@/components/global-ui/empty-state';
-import SectionReservations from './_modules/sections/section-reservations';
+import ReservationsSection from './_modules/sections/reservations-section';
 
 export default async function Page() {
   // Get current user
@@ -91,6 +91,6 @@ export default async function Page() {
   });
 
   return (
-    <SectionReservations formattedListings={formattedListings}/>
+    <ReservationsSection formattedListings={formattedListings}/>
   );
 }
