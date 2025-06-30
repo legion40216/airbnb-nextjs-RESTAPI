@@ -18,13 +18,13 @@ export default function SectionBannerHeading({
   const subtitle = `${bannerData.locationRegion}, ${bannerData.locationLabel}`;
 
   return (
-    <>
+    <div className="space-y-4">
       <Headings title={bannerData.title} subtitle={subtitle} />
 
       <ListingBanner
         listingId={bannerData.listingId}
         imgSrc={bannerData.imgSrc}
       />
-    </>
+    </div>
   );
 }

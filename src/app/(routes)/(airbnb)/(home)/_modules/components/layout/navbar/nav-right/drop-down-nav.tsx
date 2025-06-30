@@ -1,7 +1,10 @@
 'use client';
 import React, { useEffect, useState } from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Hamburger } from "lucide-react";
+import { useCurrentUser } from "@/hooks/client-auth-utils";
 
 import {
   DropdownMenu,
@@ -13,22 +16,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import { Hamburger } from "lucide-react";
-import { useCurrentUser } from "@/hooks/client-auth-utils";
 
 export default function DropDownNav() {
   const { user, isPending } = useCurrentUser();
-  const isLoggedIn = !!user; // Convert user to boolean
+  const isLoggedIn = !!user;
   const pathname = usePathname();
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const allRoutes = [
-    { label: "My Trips", href: "/trips" },
-    { label: "My Favorites", href: "/favorites" },
+    { label: "My Trips",        href: "/trips" },
+    { label: "My Favourites",   href: "/favourites" },
     { label: "My Reservations", href: "/reservations" },
-    { label: "My Properties", href: "/properties" },
-    { label: "Airbnb Home", href: "/" },
+    { label: "My Properties",   href: "/properties" },
+    { label: "Airbnb Home",     href: "/" },
   ];
 
   useEffect(() => {
@@ -38,8 +39,7 @@ export default function DropDownNav() {
     setActiveLink(matchedRoute?.href || null);
   }, [pathname]);
 
-  // Show the button if we're still loading OR if user is logged in
-  // Only hide it when we're done loading AND there's no user
+  
   if (!isPending && !isLoggedIn) {
     return null;
   }

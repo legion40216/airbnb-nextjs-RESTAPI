@@ -61,7 +61,6 @@ export default function HeartButton({ listingId, isFavoritedByCurrentUser }: Hea
     }
   };
 
-  
   return (
     <Button
       variant="ghost"
