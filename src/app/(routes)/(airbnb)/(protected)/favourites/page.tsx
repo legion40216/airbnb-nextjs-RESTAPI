@@ -1,32 +1,33 @@
-import React from 'react';
+import React from 'react'
+
+import getFavouritesListing from '@/app/actions/getFavouritesListing';
 import { currentUser } from '@/hooks/server-auth-utils';
-import getProperties from '@/app/actions/getProperties';
 import useCountries from '@/hooks/useCountries';
 import { formatter } from '@/utils/formatters';
 
 import EmptyState from '@/components/global-ui/empty-state';
-import PropertiesSection from './_modules/sections/properties-section';
+import FavourtiesSection from './_modules/sections/favourites-section';
 
 export default async function Page() {
-  // Get current user
-  const user = await currentUser();
-  const userId = user?.id;
+    // Get current user
+    const user = await currentUser();
+    const userId = user?.id;
 
-  // Authorization
-  if (!userId) {
+    // Authorization
+    if (!userId) {
     return (
-      <EmptyState 
-      title="Unauthorized"
-      subtitle="Please log in to view your reservations."
-      />
+        <EmptyState 
+        title="Unauthorized"
+        subtitle="Please log in to view your reservations."
+        />
     );
-  }
+    }
 
     // Fetch reservations
-    const result = await getProperties();
-  
+    const result = await getFavouritesListing();
+
     // Handle error case
-   if ("error" in result) {
+    if ("error" in result) {
       const { error } = result;
       switch (error.type) {
         case 'UNAUTHORIZED':
@@ -48,20 +49,24 @@ export default async function Page() {
       }
     }
 
-    const { properties } = result;
 
-    // Handle no properties case
-    if (properties.length === 0) {
-      return (
-        <EmptyState 
-        title="No properties found" 
-        subtitle="You have no properties." 
-        />
-      );
-    }
+
+  const { favourites } = result;
+
+
+  if (favourites.length === 0) {
+    return (
+      <EmptyState 
+      title="No favourites found" 
+      subtitle="You have no favourites." 
+      />
+    );
+  }
+
+  console.log('Favourites:', favourites);
 
   const { getByValue } = useCountries();
-  const formattedListings = properties.map((item) => {
+  const formattedListings = favourites.map((item) => {
     const country = getByValue(item.listing.locationValue);
     return {
       id: item.listing.id,
@@ -70,12 +75,11 @@ export default async function Page() {
       imgSrc: item.listing.imgSrc,
       category: item.listing.category,
       price: formatter.format(item.listing.price),
-      isFavoritedByCurrentUser: item.listing.isFavorited,
+      isFavoritedByCurrentUser: item.isFavorited,
     };
   });
 
-
   return (
-    <PropertiesSection formattedListings={formattedListings}/>
-  );
+    <FavourtiesSection formattedListings={formattedListings}/>
+  )
 }
