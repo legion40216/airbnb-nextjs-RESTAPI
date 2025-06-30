@@ -26,14 +26,14 @@ export async function DELETE(
         startDate: true,
       },
     });
-
     if (!reservation) {
       return NextResponse.json(
         { error: "Reservation not found" },
         { status: 404 }
       );
     }
-
+    // Check if the reservation belongs to the user
+    // This is important to prevent unauthorized deletion
     if (reservation.userId !== userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

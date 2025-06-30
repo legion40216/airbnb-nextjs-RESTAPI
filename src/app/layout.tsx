@@ -9,7 +9,6 @@ import Providers from "@/lib/providers";
 import AuthModalProvider from "@/components/modals/auth-modal/auth-modal-provider";
 import MultiModalProvider from "@/components/modals/multi-modals/multi-modals/multi-modal-provider";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
       >
         <Providers>
           <Toaster />
