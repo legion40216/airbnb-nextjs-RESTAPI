@@ -6,6 +6,7 @@ import { useMultiModalStore } from '@/hooks/useMultiModalStore';
 import axios from "axios";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { ListingFormValues, ListingSchema } from '@/schemas';
 
 import {
   Form,
@@ -18,7 +19,6 @@ import ImagesInput from './rent-modal/images-input';
 import DescriptionInput from './rent-modal/description-input';
 import PriceInput from './rent-modal/price-input';
 import ImageInput from './rent-modal/image-input';
-import { ListingFormValues, ListingSchema } from '@/schemas';
 import MultiModal from '../multi-modal';
 
 const STEP_FLOW = [

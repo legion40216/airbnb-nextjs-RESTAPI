@@ -1,10 +1,17 @@
 // app/actions/getListings.ts
-import { Favourite, Listing } from "@/generated/prisma";
+import { Prisma } from "@/generated/prisma";
 import { currentUser } from "@/hooks/server-auth-utils";
 import prisma from "@/lib/prismadb";
 
-type FavouriteWithRelations = Favourite & {
-  listing: Listing;
+// Use Prisma's GetPayload to get the exact type from your query
+type FavouriteWithListing = Prisma.FavouriteGetPayload<{
+  include: {
+    listing: true;
+  };
+}>;
+
+// Define the transformed type with isFavorited flag
+export type FavouriteWithRelations = FavouriteWithListing & {
   isFavorited: true;
 };
 
@@ -17,30 +24,30 @@ export default async function getFavouritesListing(): Promise<
   { favourites: FavouriteWithRelations[] } | { error: FavouritesError }
 > {
   try {
-  // Auth check
-  const user = await currentUser();
-  const userId = user?.id;
-  if (!userId) {
-    return {
-      error: {
-        type: "UNAUTHORIZED",
-        message: "Please log in to view properties",
-      },
-    };
-  }
+    // Auth check
+    const user = await currentUser();
+    const userId = user?.id;
+    if (!userId) {
+      return {
+        error: {
+          type: "UNAUTHORIZED",
+          message: "Please log in to view properties",
+        },
+      };
+    }
 
-  const favourites = await prisma.favourite.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    include: {
-      listing: true, // includes all basic listing fields
-    },
-  });
-  
-  const favouritesWithStatus = favourites.map((fav) => ({
-    ...fav,
-    isFavorited: true as true, // ensure literal type 'true'
-  }));
+    const favourites = await prisma.favourite.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        listing: true, // includes all basic listing fields
+      },
+    });
+    
+    const favouritesWithStatus: FavouriteWithRelations[] = favourites.map((fav) => ({
+      ...fav,
+      isFavorited: true as const, // use 'as const' for literal type
+    }));
 
     return { favourites: favouritesWithStatus };
   } catch (error) {

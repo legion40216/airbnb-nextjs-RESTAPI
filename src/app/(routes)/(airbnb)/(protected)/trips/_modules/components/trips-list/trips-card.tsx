@@ -1,52 +1,49 @@
-// components/ReservationCard.tsx
+// components/PropertyCard.tsx
 "use client";
 import React, { useState } from "react";
 
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { toast } from "sonner";
 import Image from "next/image";
 
-import ConfirmModal from "@/components/modal/confirm-modal";
-import CardBtn from "@/components/global-ui/airbnb-buttons/card-btn";
 import HeartButton from "@/components/global-ui/heart-button";
+import CardBtn from "@/components/global-ui/airbnb-buttons/card-btn";
+import ConfirmModal from "@/components/modal/confirm-modal";
+import axios from "axios";
 
-type ReservationCardProps = {
+type TripCardProps = {
   id: string;
-  listingId: string;
   locationRegion: string;
   locationLabel: string;
   imgSrc: string;
-  category: string;
   price: string;
-  reservationDate: string;
-  reservedBy?: string; 
+  reservationDate: string; 
+  listingId: string;
   isFavoritedByCurrentUser?: boolean;
 };
 
-export default function ReservationCard({
+export default function TripCard({
   id: reservationId,
-  listingId,
   locationRegion,
   locationLabel,
   imgSrc,
   price,
-  reservationDate, 
-  reservedBy,
-  isFavoritedByCurrentUser,
-}: ReservationCardProps) {
+  reservationDate,
+  listingId,
+  isFavoritedByCurrentUser = false
+}: TripCardProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const toastLoading = "Deleting Reservation... Please wait.";
-  const toastMessage = "Reservation deleted successfully!";
+  const toastLoading = "Removing your Reservation... Please wait.";
+  const toastMessage = "Reservation removed successfully!";
 
   const handleDelete = async () => {    
   const toastId = toast.loading(toastLoading);
   setIsDeleting(true);
   try {
-    await axios.delete(`/api/reservations/${reservationId}`);
+    await axios.delete(`/api/trips/${reservationId}`);
     toast.success(toastMessage);
     router.refresh();
   } catch (error) {
@@ -58,31 +55,28 @@ export default function ReservationCard({
     toast.dismiss(toastId);
   }
 };
-  
+
   return (
     <div className="space-y-2">
       <div>
-        {/* Image with heart button */}
+        {/* Image */}
         <div
-          className="aspect-square overflow-hidden rounded-xl relative 
-          group cursor-pointer border"
+          className="aspect-square overflow-hidden rounded-xl relative group cursor-pointer border"
           onClick={() => router.push(`/listings/${listingId}`)}
         >
           <div className="absolute top-3 right-3 z-10">
             <HeartButton 
             listingId={listingId} 
-            isFavoritedByCurrentUser={isFavoritedByCurrentUser} 
+            isFavoritedByCurrentUser={isFavoritedByCurrentUser}
             />
           </div>
           <Image
             fill
-            className="object-cover h-full w-full group-hover:scale-110
-             transition"
+            className="object-cover h-full w-full group-hover:scale-110 transition"
             src={imgSrc}
             alt="Reservation"
           />
         </div>
-
         {/* Details */}
         <div>
           <p className="font-semibold text-lg">
@@ -93,23 +87,15 @@ export default function ReservationCard({
             {reservationDate}
           </p>
         </div>
-
-        {/* Price && Reservation-Period */}
+         {/* Price and Reserved By */}
         <div className="flex flex-col gap-1">
           <div className="flex gap-1">
             <p className="font-semibold">{price}</p>
             <p className="font-light">night</p>
           </div>
-          <div>
-            <p className='font-semibold'>
-              <span className='font-light'>Reserved by: </span>
-              <span>{reservedBy}</span>
-            </p>
-          </div>
         </div>
       </div>
-
-      {/* Delete Button */}
+        {/* Delete Button */}
       <ConfirmModal 
       onConfirm={handleDelete} 
       open={open} 
@@ -120,7 +106,7 @@ export default function ReservationCard({
         onClick={() => setOpen(true)}
         disabled={isDeleting}
         >
-          Delete Reservation
+          Delete trip
         </CardBtn>
       </ConfirmModal>
     </div>

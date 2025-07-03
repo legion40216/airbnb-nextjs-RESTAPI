@@ -90,9 +90,9 @@ export default async function Page({
 
   return (
     <div className="space-y-4">
-      <SectionBannerHeading bannerData={bannerData} />
+      <SectionBannerHeading initialData={bannerData} />
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-10">
-        <SectionReservationInfo reservationData={reservationData} />
+        <SectionReservationInfo initialData={reservationData} />
       </div>
     </div>
   );

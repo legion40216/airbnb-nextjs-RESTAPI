@@ -18,7 +18,7 @@ type ListingsListProps = {
   initialData: Listing[];
 };
 
-export default function ListingsPage({ initialData }: ListingsListProps) {
+export default function Client({ initialData }: ListingsListProps) {
   // const rawParams = useSearchParams();
 
   // // Get params

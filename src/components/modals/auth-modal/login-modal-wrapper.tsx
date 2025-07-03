@@ -1,16 +1,18 @@
-// components/auth/LoginModal.tsx
+// components/modals/auth-modal/login-modal-wrapper.tsx
 'use client';
 import React from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { signIn } from '@/lib/auth-client';
 import { LoginFormValues, loginSchema } from '@/schemas';
+import { useForm } from "react-hook-form";
+
 import AuthModal from './auth-modal';
 import LoginForm from './login-form/login-form';
-import { useForm } from "react-hook-form";
-import { Form } from '@/components/ui/form';
 
+import { Form } from '@/components/ui/form';
 
 type LoginProps = {
   title: string;
@@ -44,8 +46,11 @@ export default function LoginModalWrapper({
   handleSubmit(onSubmit)();
   };
 
+  const toastLoading = "Logging you in...";
+  const toastSuccess = "Logged in successfully!";
+
   const onSubmit = async (values: LoginFormValues) => {
-    const toastId = toast.loading('Logging you in...');
+    const toastId = toast.loading(toastLoading);
     try {
       const result = await signIn.email({
         email: values.email,
@@ -55,11 +60,12 @@ export default function LoginModalWrapper({
       if (result.error) {
         toast.error(result.error.message || 'Invalid credentials');
       } else if (result.data?.user) {
-        toast.success('Logged in successfully!');
+        toast.success(toastSuccess);
         setOpen(false);
         router.refresh();
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error(error.message || 'Something went wrong!');
     } finally {
       toast.dismiss(toastId);
