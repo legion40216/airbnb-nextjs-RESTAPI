@@ -76,6 +76,6 @@ export default async function Page() {
 
 
   return (
-    <PropertiesSection formattedListings={formattedListings}/>
+    <PropertiesSection initialData={formattedListings}/>
   );
 }

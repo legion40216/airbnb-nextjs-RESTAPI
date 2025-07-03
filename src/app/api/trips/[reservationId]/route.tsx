@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ reservationId: string }> }
-): Promise<NextResponse> {
+): Promise<Response> {
   try {
     // 1. Authenticate user
     const user = await currentUser();
@@ -17,37 +17,25 @@ export async function DELETE(
 
     const { reservationId } = await params;
 
-    // Check if reservation exists and get both guest and host info
+    // Check if reservation exists
     const reservation = await prisma.reservation.findUnique({
       where: { id: reservationId },
       select: {
         id: true,
         userId: true,
         startDate: true,
-        listing: {
-          select: {
-            userId: true,
-          },
-        },
       },
     });
-
     if (!reservation) {
       return NextResponse.json(
         { error: "Reservation not found" },
         { status: 404 }
       );
     }
-
-    // Check if user has permission to delete (either guest or host)
-    const isGuest = reservation.userId === userId;
-    const isHost = reservation.listing.userId === userId;
-
-    if (!isGuest && !isHost) {
-      return NextResponse.json(
-        { error: "You do not have permission to delete this reservation" },
-        { status: 403 }
-      );
+    // Check if the reservation belongs to the user
+    // This is important to prevent unauthorized deletion
+    if (reservation.userId !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const deletedReservation = await prisma.reservation.delete({
@@ -69,7 +57,7 @@ export async function DELETE(
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
         return NextResponse.json(
-          { error: "Reservation not found or already deleted" },
+          { error: "Reservation not found" },
           { status: 404 }
         );
       }

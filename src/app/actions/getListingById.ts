@@ -1,15 +1,17 @@
 // app/actions/getListings.ts
-import { Listing, ListingImages, Reservation, User } from "@/generated/prisma";
+import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prismadb";
 import { z } from "zod";
 
-// Type for the complete listing with relations
-// This type includes the listing itself, user information, images, and reservations
-export type ListingWithRelations = Listing & {
-  user: User;
-  images: ListingImages[];
-  reservations: Reservation[];
-};
+// Use Prisma's GetPayload to automatically generate the correct type
+// This ensures type safety and matches exactly what your query returns
+export type ListingWithRelations = Prisma.ListingGetPayload<{
+  include: {
+    user: true;
+    images: true;
+    reservations: true;
+  };
+}>;
 
 // This type is used to handle different error scenarios when fetching a listing by ID
 export type ListingsByIdError =

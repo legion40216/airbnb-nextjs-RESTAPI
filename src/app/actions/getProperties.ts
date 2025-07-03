@@ -1,10 +1,23 @@
-import { Listing, User } from "@/generated/prisma";
+import { Prisma } from "@/generated/prisma";
 import { currentUser } from "@/hooks/server-auth-utils";
 import prisma from "@/lib/prismadb";
 
-export type ListingWithRelations = {
-  user: User;
-  listing: Listing & {
+// Use Prisma's GetPayload to get the exact type from your query
+type ListingWithUser = Prisma.ListingGetPayload<{
+  include: {
+    favouritedBy: {
+      select: {
+        id: true;
+      };
+    };
+    user: true;
+  };
+}>;
+
+// Define the transformed type with isFavorited flag
+export type PropertyWithFavoriteFlag = {
+  user: ListingWithUser['user'];
+  listing: Omit<ListingWithUser, 'user' | 'favouritedBy'> & {
     isFavorited: boolean;
   };
 };
@@ -15,7 +28,7 @@ export type PropertiesError =
   | { type: "UNKNOWN_ERROR"; message: string };
 
 export default async function getProperties(): Promise<
-  { properties: ListingWithRelations[] } | { error: PropertiesError }
+  { properties: PropertyWithFavoriteFlag[] } | { error: PropertiesError }
 > {
   try {
     // Auth check
@@ -46,13 +59,13 @@ export default async function getProperties(): Promise<
       },
     });
 
-    const properties: ListingWithRelations[] = listings.map((listing) => ({
+    const properties: PropertyWithFavoriteFlag[] = listings.map((listing) => ({
       user: listing.user,
       listing: {
         ...listing,
         isFavorited: listing.favouritedBy.length > 0,
         user: undefined,
-        favouritedBy: undefined
+        favouritedBy: undefined,
       },
     }));
 

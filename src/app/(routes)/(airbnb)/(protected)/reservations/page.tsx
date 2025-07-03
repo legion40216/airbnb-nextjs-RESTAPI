@@ -1,11 +1,9 @@
 import React from 'react';
-
 import getReservations from '@/app/actions/getReservations';
 import { currentUser } from '@/hooks/server-auth-utils';
 import useCountries from '@/hooks/useCountries';
 import { formatter } from '@/utils/formatters';
 import { format } from 'date-fns';
-
 import EmptyState from '@/components/global-ui/empty-state';
 import ReservationsSection from './_modules/sections/reservations-section';
 
@@ -18,8 +16,8 @@ export default async function Page() {
   if (!userId) {
     return (
       <EmptyState 
-      title="Unauthorized"
-      subtitle="Please log in to view your reservations."
+        title="Unauthorized"
+        subtitle="Please log in to view your reservations."
       />
     );
   }
@@ -28,7 +26,7 @@ export default async function Page() {
   const result = await getReservations();
 
   // Handle error case
- if ("error" in result) {
+  if ("error" in result) {
     const { error } = result;
     switch (error.type) {
       case 'UNAUTHORIZED':
@@ -57,8 +55,8 @@ export default async function Page() {
   if (reservations.length === 0) {
     return (
       <EmptyState 
-      title="No reservations found" 
-      subtitle="You have no reservations on your properties." 
+        title="No reservations found" 
+        subtitle="You have no reservations on your properties." 
       />
     );
   }
@@ -73,9 +71,8 @@ export default async function Page() {
     // Format reservation date
     const reservationDate = `${format(new Date(item.startDate), "MMM d, yyyy")} – ${format(new Date(item.endDate), "MMM d, yyyy")}`;
     // Check if the current user favorited this listing
-    const isFavoritedByCurrentUser = item.listing.favouritedBy.some(
-      (fav) => fav.userId === userId // Changed from fav.id to fav.userId
-    );
+    const isFavoritedByCurrentUser = item.listing.favouritedBy.length > 0;
+    
     return {
       id:               item.id,
       listingId:        item.listing.id,
@@ -91,6 +88,6 @@ export default async function Page() {
   });
 
   return (
-    <ReservationsSection formattedListings={formattedListings}/>
+    <ReservationsSection initialData={formattedListings}/>
   );
 }

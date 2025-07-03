@@ -3,7 +3,7 @@ import ReservationsList from "../components/reservations-list";
 import Headings from "@/components/global-ui/headings";
 
 type ReservationsSectionProps = {
-  formattedListings: {
+  initialData: {
     id: string;
     listingId: string;
     locationRegion: string;
@@ -18,14 +18,14 @@ type ReservationsSectionProps = {
 };
 
 export default function ReservationsSection({
-  formattedListings,
+  initialData,
 }: ReservationsSectionProps) {
   return (
     <div className="space-y-4">
       <Headings title="Reservations" subtitle="List of your reservations" />
 
       <div>
-        <ReservationsList data={formattedListings} />
+        <ReservationsList data={initialData} />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import PropertiesList from "../components/properties-list";
 import Headings from "@/components/global-ui/headings";
 
 type PropertiesSectionProps = {
-  formattedListings: {
+  initialData: {
     id: string;
     locationRegion: string;
     locationLabel: string;
@@ -15,14 +15,14 @@ type PropertiesSectionProps = {
 };
 
 export default function PropertiesSection({
-  formattedListings,
+  initialData,
 }: PropertiesSectionProps) {
   return (
     <div className="space-y-4">
       <Headings title="Proerties" subtitle="List of your proerties" />
 
       <div>
-        <PropertiesList data={formattedListings} />
+        <PropertiesList data={initialData} />
       </div>
     </div>
   );

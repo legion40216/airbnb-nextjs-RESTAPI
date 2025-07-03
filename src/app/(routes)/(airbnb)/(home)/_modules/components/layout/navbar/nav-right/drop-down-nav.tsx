@@ -25,19 +25,20 @@ export default function DropDownNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const allRoutes = [
+    { label: "Airbnb Home",     href: "/" },
     { label: "My Trips",        href: "/trips" },
     { label: "My Favourites",   href: "/favourites" },
     { label: "My Reservations", href: "/reservations" },
     { label: "My Properties",   href: "/properties" },
-    { label: "Airbnb Home",     href: "/" },
   ];
 
-  useEffect(() => {
-    const matchedRoute = allRoutes.find((route) =>
-      pathname === route.href || pathname?.startsWith(route.href)
-    );
-    setActiveLink(matchedRoute?.href || null);
-  }, [pathname]);
+useEffect(() => {
+  const matchedRoute = allRoutes.find((route) => {
+    if (pathname === route.href) return true;
+    return pathname?.startsWith(route.href + "/"); // avoids `/` matching everything
+  });
+  setActiveLink(matchedRoute?.href || null);
+}, [pathname]);
 
   
   if (!isPending && !isLoggedIn) {

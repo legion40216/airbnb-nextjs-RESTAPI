@@ -20,15 +20,15 @@ type SectionReservationInfoProps = {
 }
 
 export default function SectionReservationInfo({
-    reservationData,
+    initialData,
     }: {
-    reservationData: SectionReservationInfoProps;
+    initialData: SectionReservationInfoProps;
 }) {
   const category = categories.find((item) => {
-    return item.label === reservationData.category;
+    return item.label === initialData.category;
   });
 
- const formattedReservations = reservationData.reservations.map((item) => ({
+ const formattedReservations = initialData.reservations.map((item) => ({
     startDate: new Date(item?.startDate),
     endDate: new Date(item?.endDate),
   }));
@@ -37,17 +37,17 @@ export default function SectionReservationInfo({
     <>
       <ListingInfo 
         category={category} 
-        description={reservationData.description}
-        roomCount={reservationData.roomCount}
-        bathroomCount={reservationData.bathroomCount}
-        guestCount={reservationData.guestCount}
-        userName={reservationData.userName}
-        userImg={reservationData.userImg}
+        description={initialData.description}
+        roomCount={initialData.roomCount}
+        bathroomCount={initialData.bathroomCount}
+        guestCount={initialData.guestCount}
+        userName={initialData.userName}
+        userImg={initialData.userImg}
       />
 
       <ListingReservation
-        listingId={reservationData.listingId}
-        price={reservationData.price}
+        listingId={initialData.listingId}
+        price={initialData.price}
         reservations={formattedReservations}
       />
     </>

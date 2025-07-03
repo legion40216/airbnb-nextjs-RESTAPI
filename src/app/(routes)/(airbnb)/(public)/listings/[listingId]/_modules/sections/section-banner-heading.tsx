@@ -11,19 +11,19 @@ type SectionBannerHeadingProps = {
 };
 
 export default function SectionBannerHeading({
-  bannerData,
+  initialData,
 }: {
-  bannerData: SectionBannerHeadingProps;
+  initialData: SectionBannerHeadingProps;
 }) {
-  const subtitle = `${bannerData.locationRegion}, ${bannerData.locationLabel}`;
+  const subtitle = `${initialData.locationRegion}, ${initialData.locationLabel}`;
 
   return (
     <div className="space-y-4">
-      <Headings title={bannerData.title} subtitle={subtitle} />
+      <Headings title={initialData.title} subtitle={subtitle} />
 
       <ListingBanner
-        listingId={bannerData.listingId}
-        imgSrc={bannerData.imgSrc}
+        listingId={initialData.listingId}
+        imgSrc={initialData.imgSrc}
       />
     </div>
   );

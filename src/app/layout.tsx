@@ -36,11 +36,11 @@ export default function RootLayout({
       >
         <Providers>
           <Toaster />
-          <Provider>
-            <AuthModalProvider />
-            <MultiModalProvider />
-            {children}
-          </Provider>
+            <Provider>
+              <AuthModalProvider />
+              <MultiModalProvider />
+              {children}
+            </Provider>
         </Providers>
       </body>
     </html>

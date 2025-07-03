@@ -80,6 +80,6 @@ export default async function Page() {
   });
 
   return (
-    <FavourtiesSection formattedListings={formattedListings}/>
+    <FavourtiesSection initialData={formattedListings}/>
   )
 }
